@@ -1,31 +1,22 @@
 import React from "react";
 import {CarItem} from "./CarItem";
 
-export const allCars = [
-    {
-        imgSrc: "https://www.abbottsaab.com/wp-content/uploads/2016/02/saab-93-overview.png",
-        model: "Saab 9-3 SS",
-        desc: "1.5 benzyna"
-    },
-    {
-        imgSrc: "https://carsguide-res.cloudinary.com/image/upload/f_auto,fl_lossy,q_auto,t_cg_hero_low/v1/editorial/Mazda-323.png",
-        model: "Mazda 323 BJ",
-        desc: "1.6 Benzyna + Gaz"
-    },
-    {
-        imgSrc: "http://namasce.pl/wp-content/uploads/2014/11/renault_megane.gif",
-        model: "Renault Megane",
-        desc: "1.6 Benzyna + Gaz"
-    }];
-
 export class CarList extends React.Component {
 
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
 
         this.state = {
-            filteredCars: allCars
+            allCars: [],
+            filteredCars: []
         }
+    }
+
+    componentDidMount() {
+        fetch("http://localhost:4000/cars")
+            .then(res => res.json())
+            .then(json => this.setState({allCars: json, filteredCars: json}))
+            .then(() => this.getFilteredCars);
     }
 
     componentDidUpdate(prevProps) {
@@ -54,11 +45,11 @@ export class CarList extends React.Component {
 
     getFilteredCars = () => {
         const filteredCars = this.filterCars(this.props.searchValue);
-        this.setState({filteredCars});
+        this.setState({filteredCars: filteredCars});
     };
 
     filterCars(searchValue) {
-        return allCars.filter(car =>
+        return this.state.allCars.filter(car =>
             car.model.toLowerCase().includes(searchValue.toLowerCase())
         );
     }
