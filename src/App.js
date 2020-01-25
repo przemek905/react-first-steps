@@ -10,15 +10,16 @@ class App extends React.Component {
         super();
 
         this.state = {
-            searchValue: ""
+            searchValue: "",
+            newCar: null
         }
     }
 
     render() {
         return (
             <div>
-                <AppHeader searchValue={this.onSearchInput}/>
-                <CarList searchValue={this.state.searchValue}/>
+                <AppHeader searchValue={this.onSearchInput} saveCar={(newCar) => this.onNewCaAdded(newCar)}/>
+                <CarList searchValue={this.state.searchValue} newCar={this.state.newCar}/>
             </div>
         );
     }
@@ -29,6 +30,13 @@ class App extends React.Component {
         this.setState({
             searchValue
         });
+    };
+
+    onNewCaAdded(newCar) {
+        console.log("New car added: ", newCar)
+        this.setState({
+            newCar: newCar
+        })
     }
 }
 

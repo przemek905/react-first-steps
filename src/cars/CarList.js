@@ -1,5 +1,6 @@
 import React from "react";
 import {CarItem} from "./CarItem";
+import Loader from 'react-loader-spinner';
 
 export class CarList extends React.Component {
 
@@ -8,25 +9,47 @@ export class CarList extends React.Component {
 
         this.state = {
             allCars: [],
-            filteredCars: []
+            filteredCars: [],
+            isLoading: false,
+            error: null
         }
     }
 
     componentDidMount() {
-        fetch("http://localhost:4000/cars")
-            .then(res => res.json())
-            .then(json => this.setState({allCars: json, filteredCars: json}))
-            .then(() => this.getFilteredCars);
+        this.fetchCars();
     }
 
     componentDidUpdate(prevProps) {
         if (prevProps.searchValue !== this.props.searchValue) {
             this.getFilteredCars();
         }
+        if (prevProps.newCar !== this.props.newCar) {
+            console.log("Fetching cars");
+            this.fetchCars();
+        }
+    }
+
+    fetchCars() {
+        this.setState({isLoading: true});
+
+        fetch("http://localhost:4000/cars")
+            .then(res => res.json())
+            .then(json => this.setState({allCars: json, filteredCars: json, isLoading: false}))
+            .then(() => this.getFilteredCars)
+            .catch(error => this.setState({error: error, isLoading: false}));
     }
 
     render() {
-        if (this.state.filteredCars.length > 0) {
+        const { filteredCars, isLoading, error } = this.state;
+        if (isLoading) {
+            return <div className="page-center"><Loader type="TailSpin"/></div>;
+        }
+
+        if (error) {
+            return <p className="page-center">{error.message}</p>;
+        }
+
+        if (filteredCars.length > 0) {
             return (
                 <div>
                     <main className="container">
@@ -39,7 +62,7 @@ export class CarList extends React.Component {
             );
         }
         return (
-            <p>No results for this search!</p>
+            <p className="page-center">No results for this search!</p>
         );
     }
 
