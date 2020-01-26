@@ -1,7 +1,10 @@
 import React from 'react';
 import './App.css';
 import {CarList} from "./cars/CarList";
-import {AppHeader} from "./AppHeader";
+import {AppHeaderContainer} from "./AppHeader";
+import {getFilteredCars} from "./store/selectFilteredcars";
+import {addCar, carsFetched, carsRequest, carsRequestError} from "./store/actions";
+import {connect} from "react-redux";
 
 
 class App extends React.Component {
@@ -15,29 +18,37 @@ class App extends React.Component {
         }
     }
 
+    componentDidMount() {
+        this.fetchCars();
+    }
+
+    fetchCars() {
+        this.props.carsRequest();
+        fetch("http://localhost:4000/cars")
+            .then(res => res.json())
+            .then(json => this.props.carsFetched(json))
+            .catch(error => this.props.carsRequestError(error));
+    }
+
     render() {
         return (
             <div>
-                <AppHeader searchValue={this.onSearchInput} saveCar={(newCar) => this.onNewCaAdded(newCar)}/>
-                <CarList searchValue={this.state.searchValue} newCar={this.state.newCar}/>
+                <AppHeaderContainer/>
+                <CarList cars={this.props}/>
             </div>
         );
     }
 
-    onSearchInput = (event) => {
-        const searchValue = event.currentTarget.value;
-        console.log("Wartość wyszukiwania: " + searchValue);
-        this.setState({
-            searchValue
-        });
-    };
-
-    onNewCaAdded(newCar) {
-        console.log("New car added: ", newCar)
-        this.setState({
-            newCar: newCar
-        })
-    }
 }
+const mapStateToProps = (state) => {
+    return {
+        cars: getFilteredCars(state.cars, state.carsSearch),
+        loading: state.cars.loading,
+        error: state.cars.error
+    }
+};
+const mapDispatchToProps = { carsRequest, carsFetched, carsRequestError, addCar };
+
+export const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);
 
 export default App;

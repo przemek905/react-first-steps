@@ -3,6 +3,9 @@ import {Button} from "react-bootstrap";
 import Modal from "react-bootstrap/Modal";
 import Form from "react-bootstrap/Form";
 import Loader from "react-loader-spinner";
+import {getFilteredCars} from "../../../store/selectFilteredcars";
+import {addCar, carsFetched, carsRequest, carsRequestError} from "../../../store/actions";
+import {connect} from "react-redux";
 
 export class AddCarModal extends React.Component {
 
@@ -13,8 +16,7 @@ export class AddCarModal extends React.Component {
             imgSrc: "",
             model: "",
             desc: "",
-            isAvailable: true,
-            isLoading: false
+            isAvailable: true
         };
 
         this.handleInputChange = this.handleInputChange.bind(this);
@@ -31,7 +33,6 @@ export class AddCarModal extends React.Component {
     }
 
     render() {
-        const { isLoading } = this.state;
         if (!this.props.show) {
             return null;
         }
@@ -48,7 +49,7 @@ export class AddCarModal extends React.Component {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <div className="page-center"><Loader type="TailSpin" visible={isLoading}/></div>
+                    <div className="page-center"><Loader type="TailSpin" visible={this.props.loading}/></div>
                     <Form>
                         <Form.Group controlId="formMark">
                             <Form.Label>Marka i model</Form.Label>
@@ -95,6 +96,7 @@ export class AddCarModal extends React.Component {
 
         this.setState({isLoading: true});
 
+        this.props.carsRequest();
         fetch(' http://localhost:4000/cars', {
             method: 'POST',
             headers: {
@@ -103,10 +105,21 @@ export class AddCarModal extends React.Component {
             },
             body: JSON.stringify(newCar)
         })
-            .then(() => this.setState({imgSrc: "", model: "", desc: "", isAvailable: true, isLoading: false}))
+            .then(() => this.setState({imgSrc: "", model: "", desc: "", isAvailable: true}))
             .then(() => this.props.addCar(newCar))
             .then(() => this.props.onClose())
-            .catch(error => this.setState({error: error, isLoading: false}));
+            .catch(error => this.props.carsRequestError(error));
     };
 
 }
+
+const mapStateToProps = (state) => {
+    return {
+        cars: getFilteredCars(state.cars, state.carsSearch),
+        loading: state.cars.loading,
+        error: state.cars.error
+    }
+};
+const mapDispatchToProps = { carsRequest, carsFetched, carsRequestError, addCar };
+
+export const AddCarContainer = connect(mapStateToProps, mapDispatchToProps)(AddCarModal);

@@ -1,6 +1,8 @@
 import Button from "react-bootstrap/Button";
 import React from "react";
-import {AddCarModal} from "./cars/containers/add-car/AddCarModal";
+import {AddCarContainer, AddCarModal} from "./cars/containers/add-car/AddCarModal";
+import {searchCars} from "./store/actions";
+import {connect} from "react-redux";
 
 export class AppHeader extends React.Component {
     state = { show: false };
@@ -13,12 +15,11 @@ export class AppHeader extends React.Component {
         this.setState({ show: false });
     };
 
-    saveCar(car) {
-        this.props.saveCar(car);
-    }
+    handleSearchChange = e => {
+        this.props.searchCars(e.currentTarget.value);
+    };
 
     render() {
-        const {searchValue} = this.props;
         return (
             <div>
                 <header className="ui fixed menu">
@@ -43,7 +44,7 @@ export class AppHeader extends React.Component {
                             <ul className="navbar-nav ml-auto">
                                 <li className="nav-item mr-2">
                                     <input className="form-control mr-3" role="search" placeholder="Wyszukaj"
-                                           onInput={searchValue}/>
+                                           value={this.props.searchCars.carsSearch} onChange={this.handleSearchChange}/>
                                 </li>
                                 <li className="nav-item">
                                     <Button className="text-line" onClick={this.showAddCar}>Dodaj auto</Button>
@@ -52,10 +53,23 @@ export class AppHeader extends React.Component {
                         </div>
 
                     </nav>
-                <AddCarModal show={this.state.show} onClose={this.hideAddCar} addCar={(car) => this.saveCar(car)}/>
+                <AddCarContainer show={this.state.show} onClose={this.hideAddCar}/>
                 </header>
             </div>
         );
     }
 
 }
+
+const mapStateToProps = state => {
+    return {
+        carsSearch: state.carsSearch
+    };
+};
+
+const mapDispatchToProps = { searchCars };
+
+export const AppHeaderContainer = connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(AppHeader);
