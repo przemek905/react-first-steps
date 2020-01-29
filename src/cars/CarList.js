@@ -5,7 +5,6 @@ import Loader from 'react-loader-spinner';
 export class CarList extends React.Component {
 
     render() {
-        console.log("LIST", this.props);
         if (this.props.cars.loading) {
             return <div className="page-center"><Loader type="TailSpin"/></div>;
         }
