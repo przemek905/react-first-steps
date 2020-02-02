@@ -1,46 +1,36 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import {CarList} from "./cars/CarList";
-import {AppHeaderContainer} from "./AppHeader";
+import {AppHeader} from "./AppHeader";
 import {getFilteredCars} from "./store/selectFilteredcars";
-import {addCar, carsFetched, carsRequest, carsRequestError, fetchCars} from "./store/actions";
-import {connect} from "react-redux";
+import {fetchCars} from "./store/actions";
+import {useDispatch, useSelector} from "react-redux";
 
 
-class App extends React.Component {
+function App() {
 
-    constructor() {
-        super();
-
-        this.state = {
-            searchValue: "",
-            newCar: null
+    const cars = useSelector(state => {
+        return {
+            cars: getFilteredCars(state.cars, state.carsSearch),
+            loading: state.cars.loading,
+            error: state.cars.error
         }
-    }
+    });
 
-    componentDidMount() {
-        this.props.fetchCars();
-    }
+    const dispatch = useDispatch();
 
-    render() {
-        return (
-            <div>
-                <AppHeaderContainer/>
-                <CarList cars={this.props}/>
-            </div>
-        );
-    }
+
+    useEffect(() => {
+        dispatch(fetchCars());
+    }, []);
+
+    return (
+        <div>
+            <AppHeader/>
+            <CarList cars={cars}/>
+        </div>
+    );
 
 }
-const mapStateToProps = (state) => {
-    return {
-        cars: getFilteredCars(state.cars, state.carsSearch),
-        loading: state.cars.loading,
-        error: state.cars.error
-    }
-};
-const mapDispatchToProps = { carsRequest, carsFetched, carsRequestError, addCar, fetchCars };
-
-export const AppContainer = connect(mapStateToProps, mapDispatchToProps)(App);
 
 export default App;
