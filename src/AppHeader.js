@@ -3,6 +3,7 @@ import React, {useCallback, useState} from "react";
 import {AddCarModal} from "./cars/containers/add-car/AddCarModal";
 import {searchCars} from "./store/actions";
 import {useDispatch, useSelector} from "react-redux";
+import {Link} from "react-router-dom";
 
 export function AppHeader() {
     const [show, setShow] = useState(false);
@@ -15,7 +16,7 @@ export function AppHeader() {
 
     const hideAddCar = useCallback(() => {
         setShow(false);
-    }, [searchValue]);
+    }, []);
 
     function handleSearchChange(e) {
         dispatch(searchCars(e.currentTarget.value));
@@ -25,19 +26,19 @@ export function AppHeader() {
         <div>
             <header className="ui fixed menu">
                 <nav className="navbar navbar-expand-lg navbar-dark bg-dark mr-auto">
-                    <a href="#" className="navbar-brand">
+                    <Link to="/cars" className="navbar-brand">
                         <img src="http://dobroskok.pl/files/4013/2567/3324/auta_head.png"
                              width="150" height="50" alt=""/>
-                    </a>
+                    </Link>
 
                     <div className="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul className="navbar-nav mr-auto">
                             <li className="nav-item active text-line">
-                                <a className="nav-link" href="#">Lista samochodów<span
-                                    className="sr-only">(current)</span></a>
+                                <Link to="/cars" className="nav-link">Lista samochodów<span
+                                    className="sr-only">(current)</span></Link>
                             </li>
                             <li className="nav-item text-line">
-                                <a className="nav-link" href="#">About</a>
+                                <Link to="/about" className="nav-link">About</Link>
                             </li>
                         </ul>
                     </div>

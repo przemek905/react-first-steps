@@ -5,6 +5,8 @@ import {AppHeader} from "./AppHeader";
 import {getFilteredCars} from "./store/selectFilteredcars";
 import {fetchCars} from "./store/actions";
 import {useDispatch, useSelector} from "react-redux";
+import {BrowserRouter, Redirect, Route, Switch} from "react-router-dom";
+import {About} from "./About";
 
 
 function App() {
@@ -22,13 +24,23 @@ function App() {
 
     useEffect(() => {
         dispatch(fetchCars());
-    }, []);
+    }, [dispatch]);
 
     return (
-        <div>
-            <AppHeader/>
-            <CarList cars={cars}/>
-        </div>
+        <BrowserRouter>
+            <div>
+                <AppHeader/>
+                <Switch>
+                    <Redirect exact from="/" to="cars" />
+                    <Route path="/cars">
+                        <CarList cars={cars}/>
+                    </Route>
+                    <Route path="/about">
+                        <About/>
+                    </Route>
+                </Switch>
+            </div>
+        </BrowserRouter>
     );
 
 }
