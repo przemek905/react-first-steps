@@ -23,11 +23,12 @@
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
+    "install": "npm install",
     "start": "react-scripts start",
+    "mock:api": "json-server --watch api/db.json --port 4000 --delay 2000",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "mock:api": "json-server --watch api/db.json --port 4000 --delay 2000"
+    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": "react-app"
